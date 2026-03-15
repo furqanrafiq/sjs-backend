@@ -16,6 +16,7 @@ app.use('/api/districts', require('./routes/districts'))
 app.use('/api/incidents', require('./routes/incidents'))
 app.use('/api/predictions', require('./routes/predictions'))
 app.use('/api/kpi', require('./routes/kpi'))
+app.use('/api/email-content', require('./routes/emailContent'))
 
 // ─── Health check ────────────────────────────────────────────────────────────
 app.get('/', (req, res) => res.json({ status: 'SJS Backend running' }))

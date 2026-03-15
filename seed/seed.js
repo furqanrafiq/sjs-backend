@@ -13,6 +13,7 @@ const Joint = require('../models/Joint')
 const Incident = require('../models/Incident')
 const AiPrediction = require('../models/Aiprediction')
 const { ResponseTime, Task, NetGain } = require('../models/Kpi')
+const EmailContent = require('../models/EmailContent')
 
 // ─── HEALTH HELPERS ──────────────────────────────────────────────────────────
 function computeHealth(items) {
@@ -608,6 +609,54 @@ const netGainData = [
     { districtId: 'D10', todayK: 43, mtdM: 0.8, ytdM: 5.9, trendPct: 5, trend: 'up' },
 ]
 
+// ─── EMAIL CONTENT TEMPLATES ─────────────────────────────────────────────────
+const emailContentData = [
+    {
+        id: 'EMAIL-001',
+        name: 'request_received',
+        subject: 'We have received your request',
+        variables: ['name', 'title'],
+        htmlBody: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Received</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f4;font-family:system-ui,sans-serif;font-size:12pt;color:#333;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f4f4f4;">
+    <tr>
+      <td align="center" style="padding:40px 0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;">
+          <!-- Logo -->
+          <tr>
+            <td style="padding:30px 40px 10px 40px;">
+              <img src="{{logoUrl}}" alt="logo" style="max-height:40px;" />
+            </td>
+          </tr>
+          <tr><td style="padding:0 40px;"><hr style="border:none;border-top:1px solid #e0e0e0;" /></td></tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:30px 40px;">
+              <p style="margin:0 0 20px 0;"><strong>Hi {{name}},</strong></p>
+              <p style="margin:0 0 20px 0;">Thank you for reaching out to us! We have received your request: &ldquo;{{title}}&rdquo;, and we&rsquo;ll do our best to process it within 3 business days.</p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:0 40px 40px 40px;">
+              <p style="margin:0;">Best regards,<br/><strong>The [Company Name] Team</strong></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+    },
+]
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SEED FUNCTION
 // ─────────────────────────────────────────────────────────────────────────────
@@ -627,6 +676,7 @@ async function seed() {
         ResponseTime.deleteMany({}),
         Task.deleteMany({}),
         NetGain.deleteMany({}),
+        EmailContent.deleteMany({}),
     ])
 
     console.log('🌱 Seeding districts, subareas, pipelines, joints...')
@@ -704,6 +754,10 @@ async function seed() {
     await Task.insertMany(taskData)
     await NetGain.insertMany(netGainData)
     console.log(`  ✓ Response times, tasks, net gains for all districts`)
+
+    console.log('🌱 Seeding email content templates...')
+    await EmailContent.insertMany(emailContentData)
+    console.log(`  ✓ ${emailContentData.length} email templates`)
 
     console.log('\n🎉 Seed complete!')
     console.log(`   Districts:   ${rawDistricts.length}`)
